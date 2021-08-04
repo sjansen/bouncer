@@ -5,26 +5,42 @@ import (
 	"crypto/rand"
 	"crypto/rsa"
 	"crypto/x509"
+	"encoding/json"
 	"encoding/pem"
+	"fmt"
 	"math/big"
+	"sync"
 	"time"
+
+	"github.com/lestrrat-go/jwx/jwk"
 )
 
 type KeyStore interface {
-	DescribeJWKs(ctx context.Context) (map[string]time.Time, error)
+	DescribeJWKSet(ctx context.Context) (map[string]time.Time, error)
+	GetJWKSet(ctx context.Context) (map[string]string, error)
 	PutJWK(ctx context.Context, name, value string) error
 	PutSAMLCertificate(ctx context.Context, value string) error
 	PutSAMLPrivateKey(ctx context.Context, value string) error
 }
 
 type KeyRing struct {
+	sync.RWMutex
+	jwks  []byte
 	store KeyStore
 }
 
 func New(store KeyStore) *KeyRing {
 	return &KeyRing{
+		jwks:  []byte("{}"),
 		store: store,
 	}
+}
+
+// JWKSetAsJSON returns the current JSON Web Key Set.
+func (k *KeyRing) JWKSetAsJSON() []byte {
+	k.RLock()
+	defer k.RUnlock()
+	return k.jwks
 }
 
 // RekeySAML creates or updates the SAML key pair.
@@ -60,7 +76,7 @@ func (k *KeyRing) RekeySAML(ctx context.Context) error {
 
 // RotateJWKs creates any missing JSON Web Keys, or replaces the oldest if none are missing.
 func (k *KeyRing) RotateJWKs(ctx context.Context) error {
-	keys, err := k.store.DescribeJWKs(ctx)
+	keys, err := k.store.DescribeJWKSet(ctx)
 	if err != nil {
 		return err
 	}
@@ -102,4 +118,53 @@ func genkey() (*rsa.PrivateKey, string, error) {
 		Bytes: x509.MarshalPKCS1PrivateKey(key),
 	})
 	return key, string(buf), nil
+}
+
+// WatchJWKSet polls for updates to the JSON Web Key Set.
+func (k *KeyRing) WatchJWKSet(ctx context.Context) error {
+	set, err := getkeys(ctx, k.store)
+	if err != nil {
+		return err
+	}
+
+	jwks, err := json.Marshal(set)
+	if err != nil {
+		return err
+	}
+
+	k.Lock()
+	defer k.Unlock()
+	k.jwks = jwks
+
+	return nil
+}
+
+func getkeys(ctx context.Context, store KeyStore) (jwk.Set, error) {
+	keys, err := store.GetJWKSet(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	set := jwk.NewSet()
+	for k, v := range keys {
+		block, _ := pem.Decode([]byte(v))
+		if block == nil {
+			return nil, fmt.Errorf("invalid PEM data: %s", k)
+		}
+
+		parsed, err := x509.ParsePKCS1PrivateKey(block.Bytes)
+		if err != nil {
+			return nil, err
+		}
+
+		key, err := jwk.New(&parsed.PublicKey)
+		if err != nil {
+			return nil, err
+		}
+
+		_ = key.Set(jwk.KeyUsageKey, "sig")
+		set.Add(key)
+	}
+
+	return set, nil
 }

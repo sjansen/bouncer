@@ -28,6 +28,9 @@ func (s *Server) addRoutes() {
 	r.Method("GET", "/", requireLogin(
 		handlers.NewRoot(),
 	))
+	r.Method("GET", "/b/jwks/",
+		handlers.NewJWKS(s.config.KeyRing),
+	)
 	r.Method("GET", "/b/whoami/", requireLogin(
 		handlers.NewWhoAmI(),
 	))

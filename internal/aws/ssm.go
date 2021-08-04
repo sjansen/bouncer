@@ -50,6 +50,7 @@ func (c *SSMClient) DescribeParameters(ctx context.Context, names ...string) (ma
 	return values, nil
 }
 
+// GetParameters fetch a single parameters.
 func (c *SSMClient) GetParameter(ctx context.Context, name string) (string, error) {
 	resp, err := c.svc.GetParameter(ctx, &ssm.GetParameterInput{
 		Name:           aws.String(c.Prefix + name),

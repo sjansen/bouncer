@@ -14,9 +14,9 @@ require (
 	github.com/awslabs/aws-lambda-go-api-proxy v0.10.0
 	github.com/crewjam/saml v0.4.5
 	github.com/go-chi/chi v4.1.2+incompatible
+	github.com/lestrrat-go/jwx v1.2.5
 	github.com/sethvargo/go-envconfig v0.3.5
 	github.com/sjansen/dynamostore v0.0.0-20210313230354-f852e39fad36
 	github.com/stretchr/testify v1.7.0
 	golang.org/x/crypto v0.0.0-20210711020723-a769d52b0f97 // indirect
-	golang.org/x/xerrors v0.0.0-20200804184101-5ec99f83aff1 // indirect
 )

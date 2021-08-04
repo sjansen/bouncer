@@ -5,11 +5,13 @@ import (
 
 	"github.com/sjansen/bouncer/internal/aws"
 	"github.com/sjansen/bouncer/internal/config"
+	"github.com/sjansen/bouncer/internal/keyring"
 )
 
 // Config contains application settings.
 type Config struct {
 	aws.AWS
+	*keyring.KeyRing
 
 	AppURL *config.URL `env:"APP_URL,required"`
 	Listen string      `env:"LISTEN"`
@@ -34,8 +36,16 @@ type SessionStore struct {
 }
 
 func Load(ctx context.Context) (*Config, error) {
-	cfg := &Config{}
-	err := config.Load(ctx, cfg)
+	client, err := config.NewClient(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	cfg := &Config{
+		KeyRing: keyring.New(client),
+	}
+
+	err = config.Load(ctx, cfg)
 	if err != nil {
 		return nil, err
 	}

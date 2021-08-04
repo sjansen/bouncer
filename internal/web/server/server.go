@@ -43,6 +43,11 @@ func New(ctx context.Context) (*Server, error) {
 		return nil, err
 	}
 
+	err = cfg.KeyRing.WatchJWKSet(ctx)
+	if err != nil {
+		return nil, err
+	}
+
 	fmt.Println("Loading SAML config...")
 	sp, err := newSAMLMiddleware(cfg)
 	if err != nil {
