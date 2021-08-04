@@ -6,9 +6,21 @@ import (
 	"github.com/sjansen/bouncer/internal/config"
 )
 
-type rekeyCmd struct{}
+type rekeyCmd struct {
+	JWK  rekeyJWK  `kong:"cmd,name='jwk'"`
+	SAML rekeySAML `kong:"cmd,name='saml'"`
+}
 
-func (cmd *rekeyCmd) Run() error {
+type rekeyJWK struct{}
+
+func (cmd *rekeyJWK) Run() error {
 	ctx := context.Background()
-	return config.Rekey(ctx)
+	return config.RotateJWKs(ctx)
+}
+
+type rekeySAML struct{}
+
+func (cmd *rekeySAML) Run() error {
+	ctx := context.Background()
+	return config.RekeySAML(ctx)
 }

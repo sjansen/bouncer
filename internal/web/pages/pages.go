@@ -1,7 +1,6 @@
 package pages
 
 import (
-	"fmt"
 	"html/template"
 	"io"
 	"net/http"
@@ -14,7 +13,6 @@ import (
 var tmpls *template.Template
 
 func init() {
-	fmt.Println("Parsing templates...")
 	tmpls = template.New("pages")
 	tmpls.Funcs(template.FuncMap{
 		"HasPrefix": strings.HasPrefix,

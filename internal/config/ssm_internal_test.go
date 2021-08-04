@@ -66,7 +66,7 @@ func TestRekey(t *testing.T) {
 			tc := tc
 
 			c := &mockSSMClient{mtimes: tc.mtimes}
-			err := rekey(context.TODO(), c)
+			err := rotateJWKs(context.TODO(), c)
 			require.NoError(err)
 			require.Equal(described, c.described)
 			require.Equal(tc.updated, c.updated)
