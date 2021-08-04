@@ -1,4 +1,4 @@
-variable "prefix" {
+variable "dns-name" {
   type = string
 }
 

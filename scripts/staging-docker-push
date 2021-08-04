@@ -1,0 +1,36 @@
+#!/bin/bash
+set -e -u -o pipefail
+
+
+git diff-index --quiet HEAD -- \
+|| (echo "Working tree is dirty. Commit all changes."; false)
+
+GITSHA=$(git rev-parse HEAD)
+TIMESTAMP="$(date -u '+%Y-%m-%d %H:%M:%S +0000 UTC')"
+
+function build-and-push() {
+    declare FN="$1"
+
+    declare REPO=$(scripts/get-staging-repo-url $FN)
+    declare NAME=$(echo $REPO | sed 's|.*/||')
+    declare TAG=${REPO}:${GITSHA}
+    docker build \
+        --build-arg=GITSHA="$GITSHA" \
+        --build-arg=TIMESTAMP="$TIMESTAMP" \
+        --compress --force-rm --pull \
+        -t $TAG \
+        -f ./docker/${FN}/Dockerfile \
+        .
+    docker push $TAG
+
+    docker tag $TAG ${REPO}:latest
+    aws ecr batch-delete-image \
+        --repository-name $NAME \
+        --image-ids imageTag=latest
+    docker push ${REPO}:latest
+}
+
+
+for FN in web-fn; do
+    build-and-push $FN
+done

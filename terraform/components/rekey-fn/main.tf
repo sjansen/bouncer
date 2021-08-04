@@ -1,7 +1,7 @@
 module "lambda" {
   source = "../../modules/lambda"
   tags   = var.tags
-  name   = "${var.prefix}-rekey-fn"
+  name   = "${local.dns-name-underscored}-rekey-fn"
 
   create-ecr-repo = true
   env-vars = {

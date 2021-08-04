@@ -34,7 +34,12 @@ resource "aws_iam_role" "this" {
   assume_role_policy = data.aws_iam_policy_document.AssumeRole-lambda.json
 }
 
-resource "aws_iam_role_policy_attachment" "lambda-xray" {
+resource "aws_iam_role_policy_attachment" "logs" {
+  role       = aws_iam_role.this.name
+  policy_arn = "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+}
+
+resource "aws_iam_role_policy_attachment" "xray" {
   role       = aws_iam_role.this.name
   policy_arn = "arn:aws:iam::aws:policy/AWSXrayWriteOnlyAccess"
 }

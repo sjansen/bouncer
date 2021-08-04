@@ -12,8 +12,8 @@ func TestRekey(t *testing.T) {
 	before := time.Now()
 	after := before.Add(1 * time.Minute)
 	described := map[string]struct{}{
-		"JWK1": struct{}{},
-		"JWK2": struct{}{},
+		"JWK1": {},
+		"JWK2": {},
 	}
 
 	for _, tc := range []struct {
@@ -23,8 +23,8 @@ func TestRekey(t *testing.T) {
 	}{{
 		label: "both uninitialized",
 		updated: map[string]struct{}{
-			"JWK1": struct{}{},
-			"JWK2": struct{}{},
+			"JWK1": {},
+			"JWK2": {},
 		},
 	}, {
 		label: "key1 uninitialized",
@@ -32,7 +32,7 @@ func TestRekey(t *testing.T) {
 			"JWK2": after,
 		},
 		updated: map[string]struct{}{
-			"JWK1": struct{}{},
+			"JWK1": {},
 		},
 	}, {
 		label: "key2 uninitialized",
@@ -40,7 +40,7 @@ func TestRekey(t *testing.T) {
 			"JWK1": before,
 		},
 		updated: map[string]struct{}{
-			"JWK2": struct{}{},
+			"JWK2": {},
 		},
 	}, {
 		label: "jwk1 older",
@@ -49,7 +49,7 @@ func TestRekey(t *testing.T) {
 			"JWK2": after,
 		},
 		updated: map[string]struct{}{
-			"JWK1": struct{}{},
+			"JWK1": {},
 		},
 	}, {
 		label: "jwk2 older",
@@ -58,7 +58,7 @@ func TestRekey(t *testing.T) {
 			"JWK2": before,
 		},
 		updated: map[string]struct{}{
-			"JWK2": struct{}{},
+			"JWK2": {},
 		},
 	}} {
 		t.Run(tc.label, func(t *testing.T) {
@@ -94,7 +94,7 @@ func (c *mockSSMClient) DescribeParameters(ctx context.Context, names ...string)
 func (c *mockSSMClient) PutParameter(ctx context.Context, key, value string, encrypt bool) error {
 	if c.updated == nil {
 		c.updated = map[string]struct{}{
-			key: struct{}{},
+			key: {},
 		}
 	} else {
 		c.updated[key] = struct{}{}

@@ -5,7 +5,8 @@ import (
 )
 
 var cli struct {
-	Rekey rekeyCmd `cmd:"cmd"`
+	Rekey     rekeyCmd     `cmd:"cmd"`
+	Runserver runserverCmd `cmd:"cmd"`
 }
 
 // ParseAndRun parses command line arguments then runs the matching command.

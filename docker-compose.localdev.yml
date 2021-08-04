@@ -1,0 +1,11 @@
+version: '2.1'
+services:
+  dynamodb:
+    image: 'amazon/dynamodb-local'
+    command: "-jar DynamoDBLocal.jar -dbPath /data/dynamodb-local -sharedDb"
+    environment:
+      AWS_REGION: us-east-2
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./data/dynamodb-local:/data/dynamodb-local

@@ -12,14 +12,14 @@ import (
 
 // SSMClient provides a convenient interface to Amazon Simple Systems Manager (SSM) Parameter Store.
 type SSMClient struct {
-	prefix string
+	Prefix string
 	svc    *ssm.Client
 }
 
 // NewSSMClient creates a new aws-sdk S3 client.
 func (aws *AWS) NewSSMClient(prefix string) (*SSMClient, error) {
 	return &SSMClient{
-		prefix: prefix,
+		Prefix: prefix,
 		svc:    ssm.NewFromConfig(aws.Config),
 	}, nil
 }
@@ -28,7 +28,7 @@ func (aws *AWS) NewSSMClient(prefix string) (*SSMClient, error) {
 func (c *SSMClient) DescribeParameters(ctx context.Context, names ...string) (map[string]time.Time, error) {
 	params := make([]string, 0, len(names))
 	for _, name := range names {
-		params = append(params, c.prefix+name)
+		params = append(params, c.Prefix+name)
 	}
 
 	resp, err := c.svc.DescribeParameters(ctx, &ssm.DescribeParametersInput{
@@ -43,18 +43,30 @@ func (c *SSMClient) DescribeParameters(ctx context.Context, names ...string) (ma
 
 	values := make(map[string]time.Time, len(names))
 	for _, param := range resp.Parameters {
-		name := strings.TrimPrefix(*param.Name, c.prefix)
+		name := strings.TrimPrefix(*param.Name, c.Prefix)
 		values[name] = *param.LastModifiedDate
 	}
 
 	return values, nil
 }
 
+func (c *SSMClient) GetParameter(ctx context.Context, name string) (string, error) {
+	resp, err := c.svc.GetParameter(ctx, &ssm.GetParameterInput{
+		Name:           aws.String(c.Prefix + name),
+		WithDecryption: true,
+	})
+	if err != nil {
+		return "", err
+	}
+
+	return *resp.Parameter.Value, nil
+}
+
 // GetParameters fetches multiple parameters.
 func (c *SSMClient) GetParameters(ctx context.Context, names ...string) (map[string]string, error) {
 	params := make([]string, 0, len(names))
 	for _, name := range names {
-		params = append(params, c.prefix+name)
+		params = append(params, c.Prefix+name)
 	}
 
 	resp, err := c.svc.GetParameters(ctx, &ssm.GetParametersInput{
@@ -67,7 +79,7 @@ func (c *SSMClient) GetParameters(ctx context.Context, names ...string) (map[str
 
 	values := make(map[string]string, len(names))
 	for _, param := range resp.Parameters {
-		name := strings.TrimPrefix(*param.Name, c.prefix)
+		name := strings.TrimPrefix(*param.Name, c.Prefix)
 		values[name] = *param.Value
 	}
 
@@ -76,7 +88,7 @@ func (c *SSMClient) GetParameters(ctx context.Context, names ...string) (map[str
 
 // PutParameter adds or replaces a parameter.
 func (c *SSMClient) PutParameter(ctx context.Context, name string, value string, encrypt bool) error {
-	name = c.prefix + name
+	name = c.Prefix + name
 	input := &ssm.PutParameterInput{
 		Name:      aws.String(name),
 		Value:     aws.String(value),
