@@ -1,4 +1,4 @@
-package config
+package keyring
 
 import (
 	"context"
@@ -8,18 +8,15 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestRekey(t *testing.T) {
+func TestRekeyJWKs(t *testing.T) {
 	before := time.Now()
 	after := before.Add(1 * time.Minute)
-	described := map[string]struct{}{
-		"JWK1": {},
-		"JWK2": {},
-	}
 
 	for _, tc := range []struct {
-		label   string
-		mtimes  map[string]time.Time
-		updated map[string]struct{}
+		label     string
+		described bool
+		mtimes    map[string]time.Time
+		updated   map[string]struct{}
 	}{{
 		label: "both uninitialized",
 		updated: map[string]struct{}{
@@ -65,33 +62,29 @@ func TestRekey(t *testing.T) {
 			require := require.New(t)
 			tc := tc
 
-			c := &mockSSMClient{mtimes: tc.mtimes}
-			err := rotateJWKs(context.TODO(), c)
+			store := &mockKeyStore{mtimes: tc.mtimes}
+			keyring := New(store)
+			err := keyring.RotateJWKs(context.TODO())
 			require.NoError(err)
-			require.Equal(described, c.described)
-			require.Equal(tc.updated, c.updated)
+			require.Equal(true, store.described)
+			require.Equal(tc.updated, store.updated)
 		})
 	}
 }
 
-type mockSSMClient struct {
-	ssmClient
-	described map[string]struct{}
-	updated   map[string]struct{}
+type mockKeyStore struct {
+	KeyStore
+	described bool
 	mtimes    map[string]time.Time
+	updated   map[string]struct{}
 }
 
-func (c *mockSSMClient) DescribeParameters(ctx context.Context, names ...string) (map[string]time.Time, error) {
-	if c.described == nil {
-		c.described = map[string]struct{}{}
-	}
-	for _, name := range names {
-		c.described[name] = struct{}{}
-	}
+func (c *mockKeyStore) DescribeJWKs(ctx context.Context) (map[string]time.Time, error) {
+	c.described = true
 	return c.mtimes, nil
 }
 
-func (c *mockSSMClient) PutParameter(ctx context.Context, key, value string, encrypt bool) error {
+func (c *mockKeyStore) putParameter(key string) error {
 	if c.updated == nil {
 		c.updated = map[string]struct{}{
 			key: {},
@@ -100,4 +93,8 @@ func (c *mockSSMClient) PutParameter(ctx context.Context, key, value string, enc
 		c.updated[key] = struct{}{}
 	}
 	return nil
+}
+
+func (c *mockKeyStore) PutJWK(ctx context.Context, name, value string) error {
+	return c.putParameter(name)
 }
