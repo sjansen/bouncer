@@ -13,8 +13,9 @@ type Config struct {
 	aws.AWS
 	*keyring.KeyRing
 
-	AppURL *config.URL `env:"APP_URL,required"`
-	Listen string      `env:"LISTEN"`
+	AppURL   *config.URL `env:"APP_URL,required"`
+	Insecure bool        `env:"INSECURE,default=false"`
+	Listen   string      `env:"LISTEN"`
 
 	SAML         SAML
 	SessionStore SessionStore

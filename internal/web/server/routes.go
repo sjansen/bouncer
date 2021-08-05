@@ -7,6 +7,7 @@ import (
 	cmw "github.com/go-chi/chi/middleware"
 
 	"github.com/sjansen/bouncer/internal/web/handlers"
+	"github.com/sjansen/bouncer/internal/web/middleware"
 )
 
 func (s *Server) addRoutes() {
@@ -24,16 +25,22 @@ func (s *Server) addRoutes() {
 		s.relaystate.LoadAndSave,
 	)
 
-	requireLogin := s.saml.RequireAccount
+	jwt := &middleware.JWT{
+		KeyRing: s.config.KeyRing,
+		Secure:  !s.config.Insecure,
+		Subject: s.config.AppURL.Host,
+	}
+	requireLogin := chi.Chain(
+		s.saml.RequireAccount,
+		jwt.SetJWT,
+	).Handler
+
 	r.Method("GET", "/", requireLogin(
 		handlers.NewRoot(s.config),
 	))
 	r.Method("GET", "/b/jwks/",
 		handlers.NewJWKS(s.config),
 	)
-	r.Method("GET", "/b/jwt/", requireLogin(
-		handlers.NewJWT(s.config),
-	))
 	r.Method("GET", "/b/whoami/", requireLogin(
 		handlers.NewWhoAmI(s.config),
 	))
