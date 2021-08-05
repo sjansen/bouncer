@@ -7,6 +7,7 @@ import (
 
 	"github.com/sjansen/bouncer/internal/authz"
 	"github.com/sjansen/bouncer/internal/build"
+	"github.com/sjansen/bouncer/internal/web/config"
 	"github.com/sjansen/bouncer/internal/web/pages"
 )
 
@@ -14,11 +15,11 @@ import (
 type Root struct{}
 
 // NewRoot creates a new root page handler.
-func NewRoot() *Root {
+func NewRoot(cfg *config.Config) *Root {
 	return &Root{}
 }
 
-// ServeHTTP handles reqeusts for the root page.
+// ServeHTTP handles requests for the root page.
 func (p *Root) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	var user *authz.User
 	s := samlsp.SessionFromContext(r.Context())

@@ -12,12 +12,15 @@ import (
 	"sync"
 	"time"
 
+	"github.com/lestrrat-go/jwx/jwa"
 	"github.com/lestrrat-go/jwx/jwk"
+	"github.com/lestrrat-go/jwx/jws"
+	"github.com/lestrrat-go/jwx/jwt"
 )
 
 type KeyStore interface {
 	DescribeJWKSet(ctx context.Context) (map[string]time.Time, error)
-	GetJWKSet(ctx context.Context) (map[string]string, error)
+	GetJWKSet(ctx context.Context) (map[string]string, map[string]time.Time, error)
 	PutJWK(ctx context.Context, name, value string) error
 	PutSAMLCertificate(ctx context.Context, value string) error
 	PutSAMLPrivateKey(ctx context.Context, value string) error
@@ -25,13 +28,18 @@ type KeyStore interface {
 
 type KeyRing struct {
 	sync.RWMutex
-	jwks  []byte
+	json  []byte
 	store KeyStore
+	jwt   struct {
+		key   *rsa.PrivateKey
+		kid   string
+		mtime time.Time
+	}
 }
 
 func New(store KeyStore) *KeyRing {
 	return &KeyRing{
-		jwks:  []byte("{}"),
+		json:  []byte("{}"),
 		store: store,
 	}
 }
@@ -40,7 +48,24 @@ func New(store KeyStore) *KeyRing {
 func (k *KeyRing) JWKSetAsJSON() []byte {
 	k.RLock()
 	defer k.RUnlock()
-	return k.jwks
+	return k.json
+}
+
+// NewJWT returns a few JWT for subject.
+func (k *KeyRing) NewJWT(subj string) ([]byte, error) {
+	now := time.Now().UTC()
+	h := jws.NewHeaders()
+	_ = h.Set(jws.KeyIDKey, k.jwt.kid)
+	t := jwt.New()
+	_ = t.Set(jwt.SubjectKey, subj)
+	_ = t.Set(jwt.AudienceKey, "bouncer-authz")
+	_ = t.Set(jwt.IssuerKey, "bouncer")
+	_ = t.Set(jwt.IssuedAtKey, now)
+	_ = t.Set(jwt.ExpirationKey, now.Add(1*time.Hour))
+	return jwt.Sign(
+		t, jwa.RS256, k.jwt.key,
+		jwt.WithJwsHeaders(h),
+	)
 }
 
 // RekeySAML creates or updates the SAML key pair.
@@ -107,22 +132,9 @@ func (k *KeyRing) RotateJWKs(ctx context.Context) error {
 	return nil
 }
 
-func genkey() (*rsa.PrivateKey, string, error) {
-	key, err := rsa.GenerateKey(rand.Reader, 2048)
-	if err != nil {
-		return nil, "", err
-	}
-
-	buf := pem.EncodeToMemory(&pem.Block{
-		Type:  "RSA PRIVATE KEY",
-		Bytes: x509.MarshalPKCS1PrivateKey(key),
-	})
-	return key, string(buf), nil
-}
-
-// WatchJWKSet polls for updates to the JSON Web Key Set.
+// WatchJWKSet polls for updated JSON Web Keys.
 func (k *KeyRing) WatchJWKSet(ctx context.Context) error {
-	set, err := getkeys(ctx, k.store)
+	set, err := k.getjwkset(ctx)
 	if err != nil {
 		return err
 	}
@@ -134,22 +146,22 @@ func (k *KeyRing) WatchJWKSet(ctx context.Context) error {
 
 	k.Lock()
 	defer k.Unlock()
-	k.jwks = jwks
+	k.json = jwks
 
 	return nil
 }
 
-func getkeys(ctx context.Context, store KeyStore) (jwk.Set, error) {
-	keys, err := store.GetJWKSet(ctx)
+func (k *KeyRing) getjwkset(ctx context.Context) (jwk.Set, error) {
+	keys, mtimes, err := k.store.GetJWKSet(ctx)
 	if err != nil {
 		return nil, err
 	}
 
 	set := jwk.NewSet()
-	for k, v := range keys {
-		block, _ := pem.Decode([]byte(v))
+	for name, value := range keys {
+		block, _ := pem.Decode([]byte(value))
 		if block == nil {
-			return nil, fmt.Errorf("invalid PEM data: %s", k)
+			return nil, fmt.Errorf("invalid PEM data: %s", name)
 		}
 
 		parsed, err := x509.ParsePKCS1PrivateKey(block.Bytes)
@@ -157,14 +169,51 @@ func getkeys(ctx context.Context, store KeyStore) (jwk.Set, error) {
 			return nil, err
 		}
 
-		key, err := jwk.New(&parsed.PublicKey)
+		kid, key, err := genjwk(parsed)
 		if err != nil {
 			return nil, err
 		}
-
-		_ = key.Set(jwk.KeyUsageKey, "sig")
 		set.Add(key)
+
+		if mtime, ok := mtimes[name]; ok && k.jwt.mtime.Before(mtime) {
+			k.jwt.kid = kid
+			k.jwt.key = parsed
+			k.jwt.mtime = mtime
+		}
 	}
 
 	return set, nil
+}
+
+func genjwk(key *rsa.PrivateKey) (string, jwk.Key, error) {
+	k, err := jwk.New(&key.PublicKey)
+	if err != nil {
+		return "", nil, err
+	}
+
+	err = jwk.AssignKeyID(k)
+	if err != nil {
+		return "", nil, err
+	}
+
+	err = k.Set(jwk.KeyUsageKey, "sig")
+	if err != nil {
+		return "", nil, err
+	}
+
+	kid, _ := k.Get(jwk.KeyIDKey)
+	return kid.(string), k, nil
+}
+
+func genkey() (*rsa.PrivateKey, string, error) {
+	key, err := rsa.GenerateKey(rand.Reader, 2048)
+	if err != nil {
+		return nil, "", err
+	}
+
+	buf := pem.EncodeToMemory(&pem.Block{
+		Type:  "RSA PRIVATE KEY",
+		Bytes: x509.MarshalPKCS1PrivateKey(key),
+	})
+	return key, string(buf), nil
 }

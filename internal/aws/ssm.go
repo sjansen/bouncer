@@ -64,7 +64,7 @@ func (c *SSMClient) GetParameter(ctx context.Context, name string) (string, erro
 }
 
 // GetParameters fetches multiple parameters.
-func (c *SSMClient) GetParameters(ctx context.Context, names ...string) (map[string]string, error) {
+func (c *SSMClient) GetParameters(ctx context.Context, names ...string) (map[string]string, map[string]time.Time, error) {
 	params := make([]string, 0, len(names))
 	for _, name := range names {
 		params = append(params, c.Prefix+name)
@@ -75,16 +75,18 @@ func (c *SSMClient) GetParameters(ctx context.Context, names ...string) (map[str
 		WithDecryption: true,
 	})
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
 	values := make(map[string]string, len(names))
+	mtimes := make(map[string]time.Time, len(names))
 	for _, param := range resp.Parameters {
 		name := strings.TrimPrefix(*param.Name, c.Prefix)
-		values[name] = *param.Value
+		values[name] = aws.ToString(param.Value)
+		mtimes[name] = aws.ToTime(param.LastModifiedDate)
 	}
 
-	return values, nil
+	return values, mtimes, nil
 }
 
 // PutParameter adds or replaces a parameter.

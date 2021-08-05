@@ -6,6 +6,7 @@ import (
 	"github.com/crewjam/saml/samlsp"
 
 	"github.com/sjansen/bouncer/internal/authz"
+	"github.com/sjansen/bouncer/internal/web/config"
 	"github.com/sjansen/bouncer/internal/web/pages"
 )
 
@@ -13,7 +14,7 @@ import (
 type WhoAmI struct{}
 
 // NewRoot creates a new root page handler.
-func NewWhoAmI() *WhoAmI {
+func NewWhoAmI(cfg *config.Config) *WhoAmI {
 	return &WhoAmI{}
 }
 

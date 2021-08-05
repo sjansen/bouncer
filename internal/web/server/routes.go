@@ -26,13 +26,16 @@ func (s *Server) addRoutes() {
 
 	requireLogin := s.saml.RequireAccount
 	r.Method("GET", "/", requireLogin(
-		handlers.NewRoot(),
+		handlers.NewRoot(s.config),
 	))
 	r.Method("GET", "/b/jwks/",
-		handlers.NewJWKS(s.config.KeyRing),
+		handlers.NewJWKS(s.config),
 	)
+	r.Method("GET", "/b/jwt/", requireLogin(
+		handlers.NewJWT(s.config),
+	))
 	r.Method("GET", "/b/whoami/", requireLogin(
-		handlers.NewWhoAmI(),
+		handlers.NewWhoAmI(s.config),
 	))
 	r.Mount("/saml/", s.saml)
 }

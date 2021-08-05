@@ -11,7 +11,7 @@ import (
 type ssmClient interface {
 	DescribeParameters(ctx context.Context, names ...string) (map[string]time.Time, error)
 	GetParameter(ctx context.Context, name string) (string, error)
-	GetParameters(ctx context.Context, names ...string) (map[string]string, error)
+	GetParameters(ctx context.Context, names ...string) (map[string]string, map[string]time.Time, error)
 	PutParameter(ctx context.Context, key, value string, encrypt bool) error
 }
 
@@ -46,7 +46,7 @@ func (c *Client) DescribeJWKSet(ctx context.Context) (map[string]time.Time, erro
 	return c.ssmClient.DescribeParameters(ctx, "JWK1", "JWK2")
 }
 
-func (c *Client) GetJWKSet(ctx context.Context) (map[string]string, error) {
+func (c *Client) GetJWKSet(ctx context.Context) (map[string]string, map[string]time.Time, error) {
 	return c.ssmClient.GetParameters(ctx, "JWK1", "JWK2")
 }
 

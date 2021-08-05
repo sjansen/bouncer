@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	"github.com/sjansen/bouncer/internal/keyring"
+	"github.com/sjansen/bouncer/internal/web/config"
 )
 
 // JWKS exposes the current JSON Web Key Set.
@@ -12,11 +13,11 @@ type JWKS struct {
 }
 
 // NewJWKS creates a new handler.
-func NewJWKS(keyring *keyring.KeyRing) *JWKS {
-	return &JWKS{keyring: keyring}
+func NewJWKS(cfg *config.Config) *JWKS {
+	return &JWKS{keyring: cfg.KeyRing}
 }
 
-// ServeHTTP handles reqeusts for the root page.
+// ServeHTTP handles HTTP requests.
 func (h *JWKS) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	_, _ = w.Write(h.keyring.JWKSetAsJSON())
