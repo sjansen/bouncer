@@ -1,12 +1,3 @@
-data "archive_file" "viewer-request" {
-  type        = "zip"
-  output_path = "${path.module}/viewer-request.zip"
-  source {
-    filename = "index.js"
-    content  = file("${path.module}/../../../cloudfront/viewer-request/dist.js")
-  }
-}
-
 module "apigw" {
   source = "../../modules/apigw"
   tags   = var.tags
@@ -41,6 +32,21 @@ module "lambda" {
     BOUNCER_SAML_PRIVATE_KEY   = "ssm"
     BOUNCER_SESSION_TABLE_NAME = aws_dynamodb_table.sessions.name
     BOUNCER_SSM_PREFIX         = "/${var.ssm-prefix}/"
+  }
+}
+
+module "origin-request" {
+  source = "../../modules/lambda@edge"
+  tags   = var.tags
+
+  handler  = "index.handler"
+  name     = "${local.dns-name-underscored}-origin-request"
+  zip_hash = data.archive_file.origin-request.output_base64sha256
+  zip_path = data.archive_file.origin-request.output_path
+
+  providers = {
+    aws           = aws
+    aws.us-east-1 = aws.us-east-1
   }
 }
 

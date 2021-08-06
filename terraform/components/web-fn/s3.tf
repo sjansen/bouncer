@@ -50,6 +50,14 @@ resource "aws_s3_bucket" "media" {
   }
 }
 
+resource "aws_s3_bucket_object" "favicon" {
+  bucket       = aws_s3_bucket.media.id
+  key          = "favicon.ico"
+  content_type = "image/x-icon"
+  etag         = filemd5("${path.module}/icons/favicon.ico")
+  source       = "${path.module}/icons/favicon.ico"
+}
+
 resource "aws_s3_bucket_policy" "media" {
   bucket = aws_s3_bucket.media.id
   policy = <<EOF
