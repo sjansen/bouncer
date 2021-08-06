@@ -27,8 +27,9 @@ func (m *JWT) SetJWT(handler http.Handler) http.Handler {
 			Value:    string(jwt),
 			Path:     "/",
 			HttpOnly: true,
-			MaxAge:   12 * 60 * 60,
-			SameSite: http.SameSiteStrictMode,
+			MaxAge:   1 * 60 * 60,
+			// Browsers ignore Strict cookies set on redirect.
+			SameSite: http.SameSiteLaxMode,
 			Secure:   m.Secure,
 		}
 		http.SetCookie(w, cookie)

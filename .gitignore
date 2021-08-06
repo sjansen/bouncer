@@ -20,3 +20,4 @@ yarn-error.log
 # Patterns
 .*.sw[op]
 *-generated.tf
+*.zip

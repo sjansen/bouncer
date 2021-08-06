@@ -24,7 +24,7 @@ resource "aws_cloudfront_distribution" "this" {
   }
 
   default_cache_behavior {
-    allowed_methods  = ["DELETE", "GET", "HEAD", "OPTIONS", "PATCH", "POST", "PUT"]
+    allowed_methods  = ["GET", "HEAD", "OPTIONS"]
     cached_methods   = ["GET", "HEAD", "OPTIONS"]
     target_origin_id = "s3-bucket"
 
@@ -70,7 +70,7 @@ resource "aws_cloudfront_distribution" "this" {
       viewer_protocol_policy = "redirect-to-https"
 
       forwarded_values {
-        query_string = false
+        query_string = true
         cookies {
           forward = "all"
         }

@@ -1,0 +1,15 @@
+{
+  "name": "bouncer-viewer-request",
+  "license": "MIT",
+  "private": true,
+  "devDependencies": {
+    "esbuild": "^0.12.15"
+  },
+  "dependencies": {
+    "cookie": "^0.4.1",
+    "jose": "^3.14.3"
+  },
+  "scripts": {
+    "build": "esbuild index.js --outfile=dist.js --bundle --minify --platform=node --target=node14"
+  }
+}
