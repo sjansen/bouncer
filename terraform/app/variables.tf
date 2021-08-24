@@ -10,6 +10,10 @@ variable "prefix" {
   type = string
 }
 
+variable "public-prefixes" {
+  type = list(string)
+}
+
 variable "tags" {
   type = map(string)
 }

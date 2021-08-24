@@ -4,8 +4,8 @@ data "aws_iam_policy_document" "AssumeRole-edgelambda" {
     principals {
       type = "Service"
       identifiers = [
-        "lambda.amazonaws.com",
-        "edgelambda.amazonaws.com"
+        "edgelambda.amazonaws.com",
+        "lambda.amazonaws.com"
       ]
     }
   }

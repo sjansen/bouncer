@@ -10,6 +10,6 @@
     "jose": "^3.14.3"
   },
   "scripts": {
-    "build": "esbuild index.js --outfile=dist.js --bundle --minify --platform=node --target=node14"
+    "build": "esbuild index.js --external:./config --outfile=dist.js --bundle --minify --platform=node --target=node14"
   }
 }

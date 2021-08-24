@@ -5,21 +5,31 @@ import { jwtVerify } from 'jose/jwt/verify'
 import { JWTExpired } from 'jose/util/errors'
 import { parse } from "cookie";
 
-const JWKS = createRemoteJWKSet(new URL('https://bouncer.tuntap.net/b/jwks/'))
+import { JWKS_ENDPOINT, PUBLIC_PREFIXES } from "./config"
+
+const JWKS = createRemoteJWKSet(JWKS_ENDPOINT);
 
 exports.handler = async (e, c, cb) => {
   const request = e.Records[0].cf.request;
   const host = request.headers.host[0].value;
   const uri = request.uri;
 
-  console.log(host, uri);
   if (uri === '/' || uri === '/favicon.ico' || uri.startsWith('/b/')) {
+    console.log(host, uri);
     cb(null, request);
     return;
   }
 
+  for (let prefix of PUBLIC_PREFIXES) {
+    if (uri.startsWith(prefix)) {
+      console.log(host, uri, "Public prefix matched.");
+      cb(null, request);
+      return;
+    }
+  }
+
   if (!request.headers.cookie) {
-    console.log("Authentication required...")
+    console.log(host, uri, "Authentication required.")
     refreshToken(uri, cb);
     return;
   }
@@ -29,7 +39,7 @@ exports.handler = async (e, c, cb) => {
     {}
   );
   if (!cookies.auth_token) {
-    console.log("Missing auth_token...")
+    console.log(host, uri, "Missing auth_token.")
     refreshToken(uri, cb);
     return;
   }
@@ -44,15 +54,18 @@ exports.handler = async (e, c, cb) => {
     )
     //console.log(protectedHeader);
     //console.log(payload);
+    console.log(host, uri, "Access granted.")
     cb(null, request);
+    return;
   } catch (err) {
     if (err instanceof JWTExpired) {
-      console.log("Refreshing auth_token...")
+      console.log(host, uri, "Refreshing auth_token...")
       refreshToken(uri, cb);
       return;
     }
   }
 
+  console.log(host, uri, "Access denied.")
   accessDenied(cb);
 };
 

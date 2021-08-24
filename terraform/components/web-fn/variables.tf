@@ -6,6 +6,10 @@ variable "dns-zone" {
   type = string
 }
 
+variable "public-prefixes" {
+  type = list(string)
+}
+
 variable "ssm-prefix" {
   type = string
 }

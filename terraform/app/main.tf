@@ -10,9 +10,10 @@ module "web-fn" {
   source = "../components/web-fn"
   tags   = var.tags
 
-  dns-name   = var.dns-name
-  dns-zone   = var.dns-zone
-  ssm-prefix = var.dns-name
+  dns-name        = var.dns-name
+  dns-zone        = var.dns-zone
+  public-prefixes = var.public-prefixes
+  ssm-prefix      = var.dns-name
 
   providers = {
     aws           = aws

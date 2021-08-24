@@ -10,7 +10,8 @@ module "apigw" {
   media-bucket      = aws_s3_bucket.media.bucket_regional_domain_name
 
   edge-lambdas = {
-    "viewer-request" : module.viewer-request.function.qualified_arn
+    "origin-request" : module.origin-request.function.qualified_arn,
+    "viewer-request" : module.viewer-request.function.qualified_arn,
   }
 
   providers = {

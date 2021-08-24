@@ -3,7 +3,7 @@ data "archive_file" "origin-request" {
   output_path = "${path.module}/origin-request.zip"
   source {
     filename = "index.js"
-    content  = file("${path.module}/cloudfront.js")
+    content  = file("${path.module}/origin-request.js")
   }
 }
 
@@ -13,5 +13,13 @@ data "archive_file" "viewer-request" {
   source {
     filename = "index.js"
     content  = file("${path.module}/../../../cloudfront/viewer-request/dist.js")
+  }
+  source {
+    filename = "config.js"
+    content  = <<EOT
+'use strict';
+exports.JWKS_ENDPOINT = new URL('https://${var.dns-name}/b/jwks/');
+exports.PUBLIC_PREFIXES = new Set(${jsonencode(var.public-prefixes)});
+    EOT
   }
 }

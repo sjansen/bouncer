@@ -92,7 +92,7 @@ func (s *Server) CreateSession(w http.ResponseWriter, r *http.Request, assertion
 				case "firstName":
 					u.GivenName = value.Value
 				case "lastName":
-					u.Surname = value.Value
+					u.FamilyName = value.Value
 				case "roles":
 					u.Roles = append(u.Roles, value.Value)
 				}

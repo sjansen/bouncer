@@ -1,5 +1,8 @@
 # Upgrade Checklist
 
+- `cloudfront/viewer-request/package.json`
+  - yarn outdated
+  - yarn upgrade
 - `docker-compose.localdev.yml`
   - [`https://hub.docker.com/r/amazon/dynamodb-local`](https://hub.docker.com/r/amazon/dynamodb-local)
 - `docker/go/Dockerfile`

@@ -10,10 +10,10 @@ func init() {
 
 // User is the currently authenticated user.
 type User struct {
-	Email     string
-	GivenName string
-	Surname   string
-	Roles     []string
+	Email      string
+	GivenName  string
+	FamilyName string
+	Roles      []string
 }
 
 // IsAuthenticated returns true when the user is logged in.

@@ -5,3 +5,8 @@ variable "dns-name" {
 variable "dns-zone" {
   type = string
 }
+
+variable "public-prefixes" {
+  type    = list(string)
+  default = []
+}
