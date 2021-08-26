@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/sethvargo/go-envconfig"
+
 	"github.com/sjansen/bouncer/internal/aws"
 )
 

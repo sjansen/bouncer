@@ -12,7 +12,7 @@ function deploy-function() {
 }
 
 
-for FN in web-fn; do
+for FN in rekey-fn web-fn; do
     deploy-function \
         $(scripts/get-staging-fn-name $FN) \
         $(scripts/get-staging-repo-url $FN)

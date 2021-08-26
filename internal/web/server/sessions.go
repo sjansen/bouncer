@@ -15,8 +15,9 @@ import (
 	"github.com/sjansen/bouncer/internal/authz"
 )
 
+const idleTimeout = time.Hour // TODO
 const sessionCookieName = "sessionid"
-const sessionLifetime = 8 * time.Hour
+const sessionLifetime = 8 * time.Hour // TODO
 const trackerCookieName = "relaystate"
 const trackerLifetime = 5 * time.Minute
 
@@ -59,7 +60,7 @@ func (s *Server) addSCS(relaystate, sessions scs.Store) {
 		//sm.Cookie.SameSite = http.SameSiteStrictMode
 		sm.Cookie.Secure = true
 	}
-	sm.IdleTimeout = time.Hour
+	sm.IdleTimeout = idleTimeout
 	sm.Lifetime = sessionLifetime
 	if sessions != nil {
 		sm.Store = sessions

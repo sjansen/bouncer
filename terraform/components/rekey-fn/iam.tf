@@ -2,6 +2,12 @@ data "aws_iam_policy_document" "this" {
   statement {
     actions = [
       "ssm:DescribeParameters",
+    ]
+    resources = ["*"]
+  }
+  statement {
+    actions = [
+      "ssm:PutParameter",
       "ssm:PutParameters",
     ]
     resources = [

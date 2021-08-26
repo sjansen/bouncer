@@ -61,7 +61,7 @@ func (k *KeyRing) NewJWT(subj string) ([]byte, error) {
 	_ = t.Set(jwt.AudienceKey, "bouncer-authz")
 	_ = t.Set(jwt.IssuerKey, "bouncer")
 	_ = t.Set(jwt.IssuedAtKey, now)
-	_ = t.Set(jwt.ExpirationKey, now.Add(1*time.Hour))
+	_ = t.Set(jwt.ExpirationKey, now.Add(1*time.Hour)) // TODO
 	return jwt.Sign(
 		t, jwa.RS256, k.jwt.key,
 		jwt.WithJwsHeaders(h),

@@ -11,9 +11,12 @@ TIMESTAMP="$(date -u '+%Y-%m-%d %H:%M:%S +0000 UTC')"
 function build-and-push() {
     declare FN="$1"
 
+    echo "Preparing ${FN}..."
     declare REPO=$(scripts/get-staging-repo-url $FN)
     declare NAME=$(echo $REPO | sed 's|.*/||')
     declare TAG=${REPO}:${GITSHA}
+
+    echo "Building ${FN}..."
     docker build \
         --build-arg=GITSHA="$GITSHA" \
         --build-arg=TIMESTAMP="$TIMESTAMP" \
@@ -21,8 +24,11 @@ function build-and-push() {
         -t $TAG \
         -f ./docker/${FN}/Dockerfile \
         .
+
+    echo "Pushing ${FN}..."
     docker push $TAG
 
+    echo "Tagging latest..."
     docker tag $TAG ${REPO}:latest
     aws ecr batch-delete-image \
         --repository-name $NAME \
@@ -31,6 +37,6 @@ function build-and-push() {
 }
 
 
-for FN in web-fn; do
+for FN in rekey-fn web-fn; do
     build-and-push $FN
 done
