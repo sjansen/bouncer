@@ -8,7 +8,8 @@ module "app" {
   public-prefixes = var.public-prefixes
 
   providers = {
-    aws           = aws
-    aws.us-east-1 = aws.us-east-1
+    aws            = aws
+    aws.cloudfront = aws.cloudfront
+    aws.route53    = aws.route53
   }
 }

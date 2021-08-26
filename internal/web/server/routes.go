@@ -38,6 +38,9 @@ func (s *Server) addRoutes() {
 	r.Method("GET", "/", requireLogin(
 		handlers.NewRoot(s.config),
 	))
+	r.Method("GET", "/b/", requireLogin(
+		handlers.NewRoot(s.config),
+	))
 	r.Method("GET", "/b/jwks/", handlers.NewJWKS(s.config))
 	r.Method("GET", "/b/redirect/", requireLogin(
 		handlers.NewRedirect(s.config),

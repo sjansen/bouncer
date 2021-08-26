@@ -1,13 +1,15 @@
 data "aws_route53_zone" "zone" {
+  provider     = aws.route53
   name         = var.dns-zone
   private_zone = false
 }
 
 
 resource "aws_route53_record" "A" {
-  zone_id = data.aws_route53_zone.zone.id
-  name    = var.dns-name
-  type    = "A"
+  provider = aws.route53
+  zone_id  = data.aws_route53_zone.zone.id
+  name     = var.dns-name
+  type     = "A"
 
   alias {
     name                   = aws_cloudfront_distribution.this.domain_name
@@ -18,6 +20,7 @@ resource "aws_route53_record" "A" {
 
 
 resource "aws_route53_record" "cert-apigw" {
+  provider = aws.route53
   for_each = {
     for dvo in aws_acm_certificate.cert-apigw.domain_validation_options : dvo.domain_name => {
       name   = dvo.resource_record_name
@@ -36,6 +39,7 @@ resource "aws_route53_record" "cert-apigw" {
 
 
 resource "aws_route53_record" "cert-cloudfront" {
+  provider = aws.route53
   for_each = {
     for dvo in aws_acm_certificate.cert-cloudfront.domain_validation_options : dvo.domain_name => {
       name   = dvo.resource_record_name

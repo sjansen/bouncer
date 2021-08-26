@@ -9,6 +9,7 @@ exports.handler = (e, c, cb) => {
   } else if (!path.extname(req.uri)) {
     req.uri += "/index.html";
   }
+  //console.log(req.uri);
   cb(null, req);
   return true;
 };

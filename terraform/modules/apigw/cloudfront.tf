@@ -1,5 +1,5 @@
 resource "aws_cloudfront_distribution" "this" {
-  provider = aws.us-east-1
+  provider = aws.cloudfront
 
   enabled         = true
   is_ipv6_enabled = true
@@ -29,8 +29,8 @@ resource "aws_cloudfront_distribution" "this" {
     target_origin_id = "s3-bucket"
 
     compress               = true
-    default_ttl            = 86400
-    max_ttl                = 604800
+    default_ttl            = var.default-ttl
+    max_ttl                = var.max-ttl
     min_ttl                = 0
     viewer_protocol_policy = "redirect-to-https"
 
@@ -114,6 +114,6 @@ resource "aws_cloudfront_distribution" "this" {
 }
 
 resource "aws_cloudfront_origin_access_identity" "this" {
-  provider = aws.us-east-1
+  provider = aws.cloudfront
   comment  = "OAI for ${var.dns-name}"
 }

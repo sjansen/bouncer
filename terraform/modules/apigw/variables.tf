@@ -3,6 +3,11 @@ variable "cloudwatch-retention" {
   default = 90
 }
 
+variable "default-ttl" {
+  type    = number
+  default = 86400
+}
+
 variable "dns-name" {
   description = "for example: bouncer.example.com"
   type        = string
@@ -29,6 +34,11 @@ variable "lambda-invoke-arn" {
 
 variable "logs-bucket" {
   type = string
+}
+
+variable "max-ttl" {
+  type    = number
+  default = 604800
 }
 
 variable "media-bucket" {

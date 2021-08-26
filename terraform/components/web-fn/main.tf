@@ -2,11 +2,13 @@ module "apigw" {
   source = "../../modules/apigw"
   tags   = var.tags
 
+  default-ttl       = 3600
   dns-name          = var.dns-name
   dns-zone          = var.dns-zone
   lambda-arn        = module.lambda.function.arn
   lambda-invoke-arn = module.lambda.function.invoke_arn
   logs-bucket       = aws_s3_bucket.logs.bucket_regional_domain_name
+  max-ttl           = 3600
   media-bucket      = aws_s3_bucket.media.bucket_regional_domain_name
 
   edge-lambdas = {
@@ -15,8 +17,9 @@ module "apigw" {
   }
 
   providers = {
-    aws           = aws
-    aws.us-east-1 = aws.us-east-1
+    aws            = aws
+    aws.cloudfront = aws.cloudfront
+    aws.route53    = aws.route53
   }
 }
 
@@ -46,8 +49,8 @@ module "origin-request" {
   zip_path = data.archive_file.origin-request.output_path
 
   providers = {
-    aws           = aws
-    aws.us-east-1 = aws.us-east-1
+    aws            = aws
+    aws.cloudfront = aws.cloudfront
   }
 }
 
@@ -61,7 +64,7 @@ module "viewer-request" {
   zip_path = data.archive_file.viewer-request.output_path
 
   providers = {
-    aws           = aws
-    aws.us-east-1 = aws.us-east-1
+    aws            = aws
+    aws.cloudfront = aws.cloudfront
   }
 }

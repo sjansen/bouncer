@@ -1,5 +1,5 @@
 resource "aws_lambda_function" "this" {
-  provider = aws.us-east-1
+  provider = aws.cloudfront
   tags     = var.tags
 
   filename         = var.zip_path
