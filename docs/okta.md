@@ -9,7 +9,7 @@
 1. General Settings
  - App name: bouncer
 1. SAML Settings
- - Single sign on URL: https://example.com/saml/acs
+ - Single sign on URL: https://example.com/b/saml/acs
  - Use this for Recipient URL and Destination URL: true
  - Allow this app to request other SSO URLs: false
  - Audience URI (SP Entity ID): bouncer

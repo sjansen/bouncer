@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
+	"net/url"
 
 	"github.com/crewjam/saml"
 	"github.com/crewjam/saml/samlsp"
@@ -33,9 +34,12 @@ func newSAMLMiddleware(cfg *config.Config) (*samlsp.Middleware, error) {
 		return nil, err
 	}
 
+	url := cfg.AppURL.URL.ResolveReference(
+		&url.URL{Path: "/b/"},
+	)
 	return samlsp.New(samlsp.Options{
 		EntityID:    cfg.SAML.EntityID,
-		URL:         cfg.AppURL.URL,
+		URL:         *url,
 		Key:         keyPair.PrivateKey.(*rsa.PrivateKey),
 		Certificate: keyPair.Leaf,
 		// TODO Intermediates

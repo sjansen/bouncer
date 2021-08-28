@@ -69,6 +69,7 @@ func New(ctx context.Context) (*Server, error) {
 
 	fmt.Println("Configuring routes...")
 	s.addRoutes()
+
 	return s, nil
 }
 

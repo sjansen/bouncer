@@ -24,6 +24,7 @@ func (s *Server) addRoutes() {
 		s.sess.LoadAndSave,
 		s.relaystate.LoadAndSave,
 	)
+	r.Mount("/b/saml/", s.saml)
 
 	jwt := &middleware.JWT{
 		KeyRing: s.config.KeyRing,
@@ -48,5 +49,4 @@ func (s *Server) addRoutes() {
 	r.Method("GET", "/b/whoami/", requireLogin(
 		handlers.NewWhoAmI(s.config),
 	))
-	r.Mount("/saml/", s.saml)
 }
