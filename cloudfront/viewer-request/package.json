@@ -3,13 +3,15 @@
   "license": "MIT",
   "private": true,
   "devDependencies": {
-    "esbuild": "^0.12.15"
+    "esbuild": "^0.12.15",
+    "js-beautify": "^1.14.0"
   },
   "dependencies": {
     "cookie": "^0.4.1",
     "jose": "^3.14.3"
   },
   "scripts": {
-    "build": "esbuild index.js --external:./config --outfile=dist.js --bundle --minify --platform=node --target=node14"
+    "build": "esbuild index.js --external:./config --outfile=dist.js --bundle --minify --platform=node --target=node14",
+    "reformat": "js-beautify -r index.js"
   }
 }
