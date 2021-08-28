@@ -1,3 +1,8 @@
+variable "apigw-paths" {
+  type    = list(string)
+  default = ["/api/*"]
+}
+
 variable "cloudwatch-retention" {
   type    = number
   default = 90

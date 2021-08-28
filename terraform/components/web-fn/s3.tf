@@ -54,11 +54,21 @@ resource "aws_s3_bucket_object" "favicon" {
   bucket       = aws_s3_bucket.media.id
   key          = "favicon.ico"
   content_type = "image/x-icon"
-  source       = "${path.module}/icons/favicon.ico"
-  source_hash  = filemd5("${path.module}/icons/favicon.ico")
-
+  source       = "${path.module}/files/favicon.ico"
+  source_hash  = filemd5("${path.module}/files/favicon.ico")
   lifecycle {
-    ignore_changes = [source_hash]
+    ignore_changes = [source_hash, version_id]
+  }
+}
+
+resource "aws_s3_bucket_object" "index" {
+  bucket       = aws_s3_bucket.media.id
+  key          = "index.html"
+  content_type = "text/html"
+  source       = "${path.module}/files/index.html"
+  source_hash  = filemd5("${path.module}/files/index.html")
+  lifecycle {
+    ignore_changes = [source_hash, version_id]
   }
 }
 

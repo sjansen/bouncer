@@ -56,7 +56,7 @@ resource "aws_cloudfront_distribution" "this" {
   }
 
   dynamic "ordered_cache_behavior" {
-    for_each = toset(["/", "/b/*"])
+    for_each = toset(var.apigw-paths)
     content {
       path_pattern     = ordered_cache_behavior.value
       allowed_methods  = ["DELETE", "GET", "HEAD", "OPTIONS", "PATCH", "POST", "PUT"]

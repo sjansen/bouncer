@@ -36,9 +36,6 @@ func (s *Server) addRoutes() {
 		jwt.SetJWT,
 	).Handler
 
-	r.Method("GET", "/", requireLogin(
-		handlers.NewRoot(s.config),
-	))
 	r.Method("GET", "/b/", requireLogin(
 		handlers.NewRoot(s.config),
 	))

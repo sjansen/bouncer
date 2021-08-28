@@ -10,6 +10,10 @@ variable "public-prefixes" {
   type = list(string)
 }
 
+variable "public-root" {
+  type = bool
+}
+
 variable "ssm-prefix" {
   type = string
 }

@@ -15,18 +15,27 @@ import {
 
 import {
     JWKS_ENDPOINT,
-    PUBLIC_PREFIXES
+    PUBLIC_PREFIXES,
+    ROOT_IS_PUBLIC
 } from "./config"
 
 const JWKS = createRemoteJWKSet(JWKS_ENDPOINT);
+const rootIsPublic = ROOT_IS_PUBLIC || PUBLIC_PREFIXES.has("/")
+PUBLIC_PREFIXES.delete("/")
 
 exports.handler = async (e, c, cb) => {
     const request = e.Records[0].cf.request;
     const host = request.headers.host[0].value;
     const uri = request.uri;
 
-    if (uri === '/' || uri === '/favicon.ico' || uri.startsWith('/b/')) {
+    if (uri.startsWith('/b/')) {
         console.log(host, uri);
+        cb(null, request);
+        return;
+    }
+
+    if (rootIsPublic && uri === "/") {
+        console.log(host, uri, "Root is public.");
         cb(null, request);
         return;
     }

@@ -11,7 +11,13 @@ variable "prefix" {
 }
 
 variable "public-prefixes" {
-  type = list(string)
+  type    = list(string)
+  default = []
+}
+
+variable "public-root" {
+  type    = bool
+  default = false
 }
 
 variable "tags" {

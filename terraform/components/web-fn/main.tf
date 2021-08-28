@@ -2,6 +2,7 @@ module "apigw" {
   source = "../../modules/apigw"
   tags   = var.tags
 
+  apigw-paths       = ["/b/*"]
   default-ttl       = 3600
   dns-name          = var.dns-name
   dns-zone          = var.dns-zone

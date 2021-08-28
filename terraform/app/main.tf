@@ -13,6 +13,7 @@ module "web-fn" {
   dns-name        = var.dns-name
   dns-zone        = var.dns-zone
   public-prefixes = var.public-prefixes
+  public-root     = var.public-root
   ssm-prefix      = var.dns-name
 
   providers = {

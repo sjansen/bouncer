@@ -6,6 +6,7 @@ module "app" {
   dns-zone        = var.dns-zone
   prefix          = local.env
   public-prefixes = var.public-prefixes
+  public-root     = var.public-root
 
   providers = {
     aws            = aws

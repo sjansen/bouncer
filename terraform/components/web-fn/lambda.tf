@@ -20,6 +20,7 @@ data "archive_file" "viewer-request" {
 'use strict';
 exports.JWKS_ENDPOINT = new URL('https://${var.dns-name}/b/jwks/');
 exports.PUBLIC_PREFIXES = new Set(${jsonencode(var.public-prefixes)});
+exports.ROOT_IS_PUBLIC = ${jsonencode(var.public-root)};
     EOT
   }
 }
