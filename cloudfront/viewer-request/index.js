@@ -34,7 +34,7 @@ exports.handler = async (e, c, cb) => {
         return;
     }
 
-    if (rootIsPublic && uri === "/") {
+    if (rootIsPublic && (uri === "/" || uri == "/favicon.ico")) {
         console.log(host, uri, "Root is public.");
         cb(null, request);
         return;
@@ -102,7 +102,7 @@ function accessDenied(cb) {
             }],
             'content-type': [{
                 key: 'Content-Type',
-                value: 'text/plain'
+                value: 'text/plain; charset=utf-8'
             }]
         },
         body: '403 Access Denied',

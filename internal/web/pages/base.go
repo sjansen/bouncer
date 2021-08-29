@@ -1,15 +1,17 @@
 package pages
 
 import (
+	"embed"
 	"html/template"
 	"io"
 	"net/http"
 	"strings"
 
 	"github.com/sjansen/bouncer/internal/authz"
-	"github.com/sjansen/bouncer/internal/web"
 )
 
+//go:embed *.html
+var fs embed.FS
 var tmpls *template.Template
 
 func init() {
@@ -17,7 +19,7 @@ func init() {
 	tmpls.Funcs(template.FuncMap{
 		"HasPrefix": strings.HasPrefix,
 	})
-	template.Must(tmpls.ParseFS(web.FS, "templates/*.html"))
+	template.Must(tmpls.ParseFS(fs, "*.html"))
 }
 
 // Href is an HTML <a href="...">...</a>

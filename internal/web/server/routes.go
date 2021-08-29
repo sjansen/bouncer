@@ -1,12 +1,14 @@
 package server
 
 import (
+	"net/http"
 	"time"
 
 	"github.com/go-chi/chi"
 	cmw "github.com/go-chi/chi/middleware"
 
 	"github.com/sjansen/bouncer/internal/web/handlers"
+	"github.com/sjansen/bouncer/internal/web/images"
 	"github.com/sjansen/bouncer/internal/web/middleware"
 )
 
@@ -38,6 +40,9 @@ func (s *Server) addRoutes() {
 
 	r.Method("GET", "/b/", requireLogin(
 		handlers.NewRoot(s.config),
+	))
+	r.Method("GET", "/b/*", requireLogin(
+		http.StripPrefix("/b/", images.NewHandler()),
 	))
 	r.Method("GET", "/b/jwks/", handlers.NewJWKS(s.config))
 	r.Method("GET", "/b/redirect/", requireLogin(

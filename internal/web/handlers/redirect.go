@@ -21,7 +21,7 @@ func (h *Redirect) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	target := r.URL.Query().Get("target")
 	if !strings.HasPrefix(target, "/") {
 		w.WriteHeader(http.StatusBadRequest)
-		w.Header().Set("Content-Type", "text/plain")
+		w.Header().Set("Content-Type", "text/plain; charset=utf-8")
 		_, _ = w.Write([]byte("400 Bad Request"))
 		return
 	}
@@ -29,7 +29,7 @@ func (h *Redirect) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	url, err := url.Parse(target)
 	if err != nil || url.Host != "" {
 		w.WriteHeader(http.StatusForbidden)
-		w.Header().Set("Content-Type", "text/plain")
+		w.Header().Set("Content-Type", "text/plain; charset=utf-8")
 		_, _ = w.Write([]byte("403 Forbidden"))
 		return
 	}
