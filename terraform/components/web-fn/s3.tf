@@ -72,6 +72,14 @@ resource "aws_s3_bucket_object" "index" {
   }
 }
 
+resource "aws_s3_bucket_object" "readme" {
+  bucket       = aws_s3_bucket.media.id
+  key          = "/b/README"
+  content_type = "text/plain; charset=utf-8"
+  source       = "${path.module}/files/README"
+  source_hash  = filemd5("${path.module}/files/README")
+}
+
 resource "aws_s3_bucket_policy" "media" {
   bucket = aws_s3_bucket.media.id
   policy = <<EOF
