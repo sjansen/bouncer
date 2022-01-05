@@ -14,7 +14,7 @@ import (
 	"github.com/aws/aws-lambda-go/lambda"
 	proxy "github.com/awslabs/aws-lambda-go-api-proxy/chi"
 	"github.com/crewjam/saml/samlsp"
-	"github.com/go-chi/chi"
+	"github.com/go-chi/chi/v5"
 
 	"github.com/sjansen/bouncer/internal/web/config"
 )

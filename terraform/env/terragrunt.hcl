@@ -1,10 +1,10 @@
 locals {
   proj = "bouncer"
 
-  aws_version        = "~> 3.55"
+  aws_version        = "~> 3.70"
   docker_version     = "~> 2.15"
-  terraform_version  = "~> 1.0.5"
-  terragrunt_version = "~> 0.31.7"
+  terraform_version  = "~> 1.1.2"
+  terragrunt_version = "~> 0.35.16"
 
   defaults = {
     prefix    = local.proj

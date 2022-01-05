@@ -15,7 +15,7 @@ ADD internal /go/src/${MODULE}/internal
 RUN cd /go/src/${MODULE} && \
     echo GITSHA=${GITSHA} && \
     echo TIMESTAMP="${TIMESTAMP}" && \
-    CGO_ENABLED=0 GOOS=linux \
+    CGO_ENABLED=0 GOARCH=amd64 GOOS=linux \
     go build \
         -o /lambda-handler \
         -a -installsuffix cgo \

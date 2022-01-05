@@ -79,7 +79,7 @@ type mockKeyStore struct {
 	updated   map[string]struct{}
 }
 
-func (c *mockKeyStore) DescribeJWKs(ctx context.Context) (map[string]time.Time, error) {
+func (c *mockKeyStore) DescribeJWKSet(ctx context.Context) (map[string]time.Time, error) {
 	c.described = true
 	return c.mtimes, nil
 }

@@ -4,8 +4,8 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/go-chi/chi"
-	cmw "github.com/go-chi/chi/middleware"
+	"github.com/go-chi/chi/v5"
+	cmw "github.com/go-chi/chi/v5/middleware"
 
 	"github.com/sjansen/bouncer/internal/web/handlers"
 	"github.com/sjansen/bouncer/internal/web/images"

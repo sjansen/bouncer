@@ -1,4 +1,4 @@
-FROM golang:1.16-alpine as builder
+FROM golang:1.17-alpine as builder
 ARG FN=web-fn
 ARG MODULE=github.com/sjansen/bouncer
 RUN apk add --update \
@@ -15,7 +15,7 @@ ADD internal /go/src/${MODULE}/internal
 RUN cd /go/src/${MODULE} && \
     echo GITSHA=${GITSHA} && \
     echo TIMESTAMP="${TIMESTAMP}" && \
-    CGO_ENABLED=0 GOOS=linux \
+    CGO_ENABLED=0 GOARCH=amd64 GOOS=linux \
     go build \
         -o /lambda-handler \
         -a -installsuffix cgo \
