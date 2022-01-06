@@ -8,6 +8,8 @@
 - `docker/go/Dockerfile`
   - [`https://hub.docker.com/_/golang`](https://hub.docker.com/_/golang)
   - [`https://github.com/golangci/golangci-lint/releases`](https://github.com/golangci/golangci-lint/releases)
+- `docker/rekey-fn/Dockerfile`
+  - [`https://hub.docker.com/_/golang`](https://hub.docker.com/_/golang)
 - `docker/web-fn/Dockerfile`
   - [`https://hub.docker.com/_/golang`](https://hub.docker.com/_/golang)
 - `internal/web/pages/base.html`

@@ -1,4 +1,4 @@
-FROM golang:1.16-alpine as builder
+FROM golang:1.17-alpine as builder
 ARG FN=rekey-fn
 ARG MODULE=github.com/sjansen/bouncer
 RUN apk add --update \
