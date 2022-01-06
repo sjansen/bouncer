@@ -14,6 +14,14 @@ variable "public-root" {
   type = bool
 }
 
+variable "media-updater-groups" {
+  type = list(string)
+}
+
+variable "media-updater-roles" {
+  type = list(string)
+}
+
 variable "ssm-prefix" {
   type = string
 }

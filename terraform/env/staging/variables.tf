@@ -6,6 +6,16 @@ variable "dns-zone" {
   type = string
 }
 
+variable "media-updater-groups" {
+  type    = list(string)
+  default = []
+}
+
+variable "media-updater-roles" {
+  type    = list(string)
+  default = []
+}
+
 variable "public-prefixes" {
   type    = list(string)
   default = []
