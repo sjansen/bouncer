@@ -35,6 +35,40 @@ locals {
     ? local.decoded.region[local.env]
     : local.defaults.region[local.env]
   )
+  state = {
+    region = lookup(
+      lookup(
+        lookup(local.decoded, "state", {}),
+        local.env, {}
+      ),
+      "region",
+      local.region
+    )
+    bucket = lookup(
+      lookup(
+        lookup(local.decoded, "state", {}),
+        local.env, {}
+      ),
+      "bucket",
+      "${local.prefix}-terraform-${local.region}"
+    )
+    key = lookup(
+      lookup(
+        lookup(local.decoded, "state", {}),
+        local.env, {}
+      ),
+      "key",
+      "${local.proj}/${local.env}.tfstate"
+    )
+    table = lookup(
+      lookup(
+        lookup(local.decoded, "state", {}),
+        local.env, {}
+      ),
+      "table",
+      "terraform"
+    )
+  }
 }
 
 generate "locals" {
@@ -96,10 +130,10 @@ EOF
 remote_state {
   backend = "s3"
   config = {
-    region         = local.region
-    dynamodb_table = "terraform"
-    bucket         = "${local.prefix}-terraform-${local.region}"
-    key            = "${local.proj}/${local.env}.tfstate"
+    region         = local.state.region
+    dynamodb_table = local.state.table
+    bucket         = local.state.bucket
+    key            = local.state.key
     encrypt        = true
   }
 }
