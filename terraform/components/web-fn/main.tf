@@ -30,6 +30,7 @@ module "lambda" {
   name   = "${local.dns-name-underscored}-web-fn"
 
   create-ecr-repo = true
+
   env-vars = {
     BOUNCER_APP_URL            = "https://${var.dns-name}/"
     BOUNCER_SAML_CERTIFICATE   = "ssm"

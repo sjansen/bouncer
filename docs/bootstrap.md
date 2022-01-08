@@ -5,11 +5,32 @@ yarn build
 ```
 
 2. Configure Terraform
-```
-cd terraform/env/staging/
-echo 'dns-name = "docs.example.com"' > terraform.tfvars
-echo 'dns-zone = "example.com"' >> terraform.tfvars
-```
+
+    a. `.env.local`
+    ```
+    AWS_PROFILE=staging
+    ```
+
+    b. `terraform/env/terragrunt-local.json`
+    ```
+    {
+      "prefix": "example",
+      "providers": {
+        "aws": {
+          "profile": "staging"
+        },
+        "route53": {
+          "profile": "staging"
+        }
+      }
+    }
+    ```
+
+    c. `terraform/env/$ENV/terraform.tfvars`
+    ```
+    dns-name = "docs.example.com"
+    dns-zone = "example.com"
+    ```
 
 3. Create AWS resources
 ```

@@ -36,8 +36,8 @@ EOF
 
 resource "aws_ecr_repository" "this" {
   count = var.create-ecr-repo ? 1 : 0
-  tags  = var.tags
   name  = var.name
+  tags  = var.tags
 
   image_tag_mutability = "MUTABLE"
   image_scanning_configuration {
