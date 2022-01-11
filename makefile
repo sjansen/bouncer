@@ -2,13 +2,6 @@
 default: test
 
 
-.PHONY: check-env
-check-env:
-ifndef AWSCLI
-	$(error AWSCLI is undefined)
-endif
-
-
 .PHONY: check-working-tree
 check-working-tree:
 	@git diff-index --quiet HEAD -- \
@@ -25,19 +18,24 @@ dynamodb:
 	@scripts/docker-up-localdev
 
 
-.PHONY: login
-login: check-env
-	$(AWSCLI) ecr get-login-password \
+.PHONY: production
+production: check-working-tree
+	aws ecr get-login-password \
 	| docker login \
 	    --username AWS \
 	    --password-stdin \
-	    `scripts/get-staging-registry`
+	    `scripts/get-docker-registry production`
+	scripts/build-and-deploy production
 
 
 .PHONY: staging
-staging: check-working-tree login
-	scripts/staging-docker-push
-	scripts/staging-deploy
+staging: check-working-tree
+	aws ecr get-login-password \
+	| docker login \
+	    --username AWS \
+	    --password-stdin \
+	    `scripts/get-docker-registry staging`
+	scripts/build-and-deploy staging
 
 
 .PHONY: run

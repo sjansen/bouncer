@@ -2,6 +2,7 @@
 /.idea/
 /.vscode/
 /archive/
+/certs/
 /dist/
 .terraform/
 node_modules/

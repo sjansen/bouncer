@@ -1,4 +1,0 @@
-#!/bin/bash
-
-cd terraform/env/staging/ &>/dev/null
-terragrunt output -raw docker-registry 2>/dev/null

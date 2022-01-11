@@ -1,0 +1,25 @@
+#!/bin/bash
+
+mkdir certs
+pushd certs
+
+cat > csr.json <<-EOF
+{
+  "CN": "bouncer.example.com",
+  "key": {
+    "algo": "rsa",
+    "size": 2048
+  },
+  "names": [
+  {
+    "C": "US",
+    "ST": "Utah",
+    "L": "Bountiful",
+    "O": "Bouncer",
+    "OU": "Test Certs"
+  }
+ ]
+}
+EOF
+
+cfssl selfsign bouncer.example.com csr.json | cfssljson -bare bouncer

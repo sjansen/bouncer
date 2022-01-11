@@ -1,0 +1,12 @@
+#!/bin/bash
+
+ENV="$1"
+FN="$2"
+
+if [ -d terraform/env/$ENV/ ]; then
+  cd terraform/env/$ENV/ &>/dev/null
+  terragrunt output -raw "$FN"-repo-url 2>/dev/null
+else
+  echo missing: terraform/env/$ENV/ >&2
+  exit 1
+fi

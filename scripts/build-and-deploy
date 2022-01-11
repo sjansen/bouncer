@@ -2,17 +2,23 @@
 set -e -u -o pipefail
 
 
-git diff-index --quiet HEAD -- \
-|| (echo "Working tree is dirty. Commit all changes."; false)
+#git diff-index --quiet HEAD -- \
+#|| (echo "Working tree is dirty. Commit all changes."; false)
 
+ENV="$1"
+if [ ! -d terraform/env/$ENV/ ]; then
+  echo missing: terraform/env/$ENV/ >&2
+  exit 1
+fi
 GITSHA=$(git rev-parse HEAD)
 TIMESTAMP="$(date -u '+%Y-%m-%d %H:%M:%S +0000 UTC')"
 
+
 function build-and-push() {
     declare FN="$1"
+    declare REPO="$2"
 
     echo "Preparing ${FN}..."
-    declare REPO=$(scripts/get-staging-repo-url $FN)
     declare NAME=$(echo $REPO | sed 's|.*/||')
     declare TAG=${REPO}:${GITSHA}
 
@@ -38,5 +44,9 @@ function build-and-push() {
 
 
 for FN in rekey-fn web-fn; do
-    build-and-push $FN
+    REPO=$(scripts/get-repo-url $ENV $FN)
+    build-and-push $FN $REPO
+    ${AWSCLI:-aws} lambda update-function-code \
+        --function-name $(scripts/get-fn-name $ENV $FN) \
+        --image-uri "$REPO":latest
 done

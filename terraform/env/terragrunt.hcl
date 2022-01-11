@@ -68,6 +68,22 @@ locals {
       "table",
       "terraform"
     )
+    profile = lookup(
+      lookup(
+        lookup(local.decoded, "state", {}),
+        local.env, {}
+      ),
+      "profile",
+      null
+    )
+    role_arn = lookup(
+      lookup(
+        lookup(local.decoded, "state", {}),
+        local.env, {}
+      ),
+      "role_arn",
+      null
+    )
   }
 }
 
@@ -135,6 +151,8 @@ remote_state {
     bucket         = local.state.bucket
     key            = local.state.key
     encrypt        = true
+    profile        = local.state.profile
+    role_arn       = local.state.role_arn
   }
 }
 
