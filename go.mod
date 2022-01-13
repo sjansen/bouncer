@@ -12,7 +12,7 @@ require (
 	github.com/aws/aws-sdk-go-v2/service/dynamodb v1.11.0
 	github.com/aws/aws-sdk-go-v2/service/ssm v1.8.0
 	github.com/awslabs/aws-lambda-go-api-proxy v0.12.0
-	github.com/crewjam/saml v0.4.6
+	github.com/crewjam/saml v0.4.5
 	github.com/go-chi/chi/v5 v5.0.7
 	github.com/lestrrat-go/jwx v1.2.14
 	github.com/sethvargo/go-envconfig v0.4.0
@@ -37,8 +37,8 @@ require (
 	github.com/crewjam/httperr v0.2.0 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/decred/dcrd/dcrec/secp256k1/v4 v4.0.0-20210816181553-5444fa50b93d // indirect
+	github.com/dgrijalva/jwt-go v3.2.0+incompatible // indirect
 	github.com/goccy/go-json v0.8.1 // indirect
-	github.com/golang-jwt/jwt/v4 v4.1.0 // indirect
 	github.com/jmespath/go-jmespath v0.4.0 // indirect
 	github.com/jonboulle/clockwork v0.2.2 // indirect
 	github.com/lestrrat-go/backoff/v2 v2.0.8 // indirect
